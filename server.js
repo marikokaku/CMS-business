@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
+const inputCheck = require('./utils/inputCheck');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -11,46 +12,99 @@ app.use(express.json());
 // Connect to database
 const db = mysql.createConnection(
     {
-      host: 'localhost',
-      user: 'root',
-      password: 'kj6Qh$gda',
-      database: 'business'
+        host: 'localhost',
+        user: 'root',
+        password: 'kj6Qh$gda',
+        database: 'business'
     },
     console.log('Connected to the business database.')
-  );
+);
 
-  // Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-  });
 
-// GET a single department
-// db.query(`SELECT * FROM department WHERE id = 7`, (err, row) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(row);
-// });
+// GET all departments
+app.get('/api/department', (req, res) => {
+    const sql = `SELECT * FROM department`;
 
-// Delete a department
-// db.query(`DELETE FROM department WHERE id = ?`, 1, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//     }
-//     console.log(result);
-//   });
+    db.query(sql, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: rows
+        });
+    });
+});
+
+// Get a single department
+app.get('/api/department/:id', (req, res) => {
+    const sql = `SELECT * FROM department WHERE id = ?`;
+    const params = [req.params.id];
+
+    db.query(sql, params, (err, row) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: row
+        });
+    });
+});
+
+//Delete a department
+app.delete('/api/department/:id', (req, res) => {
+    const sql = `DELETE FROM department WHERE id = ?`;
+    const params = [req.params.id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.statusMessage(400).json({ error: res.message });
+        } else if (!result.affectedRows) {
+            res.json({
+                message: 'Department not found'
+            });
+        } else {
+            res.json({
+                message: 'deleted',
+                changes: result.affectedRows,
+                id: req.params.id
+            });
+        }
+    });
+});
 
 // Create a department 
-// const sql = `INSERT INTO department (id, name) VALUES (?, ?)`;
-// const params = [1, 'Accounting'];
-// db.query(sql, params, (err, result) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(result);
-// });
+app.post('/api/department', ({ body }, res) => {
+    const errors = inputCheck(body, 'name');
+    if (errors) {
+      res.status(400).json({ error: errors });
+      return;
+    }
 
+    const sql = `INSERT INTO department (id, name) VALUES (?,?)`;
+  const params = [body.id, body.name];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: body
+    });
+  });
+});
+
+  
+// Default response for any other request (Not Found)
+app.use((req, res) => {
+    res.status(404).end();
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-  });
+});

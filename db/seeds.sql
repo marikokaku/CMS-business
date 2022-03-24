@@ -1,6 +1,6 @@
-INSERT INTO department (id, name)
+INSERT INTO department (name)
 VALUES 
-(1, 'Accounting'),
-(2, 'Human Resources'),
-(3, 'Sales'),
-(4, 'Warehouse');
+('Accounting'),
+('Human Resources'), 
+('Marketing'),
+('Administrative');
