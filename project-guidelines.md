@@ -23,3 +23,25 @@
 * WHEN I choose to update an employee role
 * THEN I am prompted to select an employee to update and their new role and this info##rmation is updated in the database
 
+## CLI criteria
+
+# What would you like to do? 
+* view all departments
+* view all roles
+* view all employees
+* add a department
+* add a role
+* add an employee
+* update an employee role
+
+# view all departments: 
+* table showing department name and id's
+
+# view all roles: 
+* job title
+* department job belongs to 
+* salary
+
+# view all employess: 
+* 
+
