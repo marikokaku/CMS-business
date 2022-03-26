@@ -1,6 +1,7 @@
-const express = require('express');
 const mysql = require('mysql2');
-const inputCheck = require('./utils/inputCheck');
+const inquirer = require('inquirer');
+const cTable = require('console.table');
+const Connection = require('mysql2/typings/mysql/lib/Connection');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -16,95 +17,115 @@ const db = mysql.createConnection(
         user: 'root',
         password: 'kj6Qh$gda',
         database: 'business'
-    },
-    console.log('Connected to the business database.')
-);
+    });
+
+connection.connect(err => {
+    if (err) throw err;
+    console.log('connected as id ' + connection.threadId);
+    afterConnection();
+});
 
 
-// GET all departments
-app.get('/api/department', (req, res) => {
-    const sql = `SELECT * FROM department`;
-
-    db.query(sql, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+const startPrompt = () => {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'choices',
+            message: 'What would you like to do?',
+            choices: [
+                'View all departments',
+                'View all roles',
+                'View all employees',
+                'Add a department',
+                'Add a role',
+                'Add an employee',
+                'Update an employee role',
+                'Update an employee manager',
+                'View employee by manager',
+                'View employee by department',
+                'Delete a department',
+                'Delete a role',
+                'Delete an employee',
+                'View total utilized budget',
+                'Nothing'
+            ]
         }
-        res.json({
-            message: 'success',
-            data: rows
+    ])
+        .then((answers) => {
+            const { choices } = answers;
+
+            if (choices === 'View all departments') {
+                allDepartments();
+            }
+            if (choices === 'View all roles') {
+                allRoles();
+            }
+            if (choices === 'View all employees') {
+                allEmployees();
+            }
+            if (choices === 'Add a department') {
+                addDepartment();
+            }
+            if (choices === 'Add a role') {
+                addRole();
+            }
+            if (choices === 'Add an employee') {
+                addEmployee();
+            }
+            if (choices === 'Update an employee role') {
+                updateEmpRole();
+            }
+            if (choices === 'Update an employee manager') {
+                updateEmpMan();
+            }
+            if (choices === 'View employee by manager') {
+                viewEmpByMan();
+            }
+            if (choices === 'View employee by department') {
+                viewEmpByDept();
+            }
+            if (choices === 'Delete a department') {
+                deleteDepartment();
+            }
+            if (choices === 'Delete a role') {
+                deleteRole();
+            }
+            if (choices === 'Delete an employee ') {
+                deleteEmployee();
+            }
+            if (choices === 'View total utilized budget') {
+                viewBudget();
+            }
+            if (choices === 'Nothing') {
+                connection.end()
+            };
         });
-    });
-});
+};
 
-// Get a single department
-app.get('/api/department/:id', (req, res) => {
-    const sql = `SELECT * FROM department WHERE id = ?`;
-    const params = [req.params.id];
+// View all departments
 
-    db.query(sql, params, (err, row) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({
-            message: 'success',
-            data: row
-        });
-    });
-});
+// View all roles
 
-//Delete a department
-app.delete('/api/department/:id', (req, res) => {
-    const sql = `DELETE FROM department WHERE id = ?`;
-    const params = [req.params.id];
+// View all employees
 
-    db.query(sql, params, (err, result) => {
-        if (err) {
-            res.statusMessage(400).json({ error: res.message });
-        } else if (!result.affectedRows) {
-            res.json({
-                message: 'Department not found'
-            });
-        } else {
-            res.json({
-                message: 'deleted',
-                changes: result.affectedRows,
-                id: req.params.id
-            });
-        }
-    });
-});
+// Add a department
 
-// Create a department 
-app.post('/api/department', ({ body }, res) => {
-    const errors = inputCheck(body, 'name');
-    if (errors) {
-      res.status(400).json({ error: errors });
-      return;
-    }
+// Add a role
 
-    const sql = `INSERT INTO department (id, name) VALUES (?,?)`;
-  const params = [body.id, body.name];
+// Add an employee
 
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: 'success',
-      data: body
-    });
-  });
-});
+// Update an employee role
 
-  
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-});
+// Update an employee manager
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// View employee by manager
+
+// View employee by department
+
+// Delete a department
+
+// Delete a role
+
+// Delete an employee
+
+// View total utilized budget

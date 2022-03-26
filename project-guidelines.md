@@ -67,3 +67,10 @@
 
 # update an employee role
 * select an employee to update and their new role and this information is updated in the database
+
+# bonus 
+* update employee managers
+* view employee by manager
+* view employee by department
+* delete department, roles, and employees
+* view combined salaries (total utilized budget)
