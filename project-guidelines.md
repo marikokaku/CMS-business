@@ -21,7 +21,7 @@
 * WHEN I choose to add an employee
 * THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 * WHEN I choose to update an employee role
-* THEN I am prompted to select an employee to update and their new role and this info##rmation is updated in the database
+* THEN I am prompted to select an employee to update and their new role and this information is updated in the database
 
 ## CLI criteria
 
@@ -42,6 +42,28 @@
 * department job belongs to 
 * salary
 
-# view all employess: 
-* 
+# view all employess - formatted table showing: 
+* employee data, 
+* including employee ids, 
+* first names, 
+* last names, 
+* job titles, 
+* departments, 
+* salaries, 
+* and managers that the employees report to
 
+# add a department
+* enter the name of the department and that department is added to the database
+
+# add a role
+* name, 
+* salary, 
+* and department for the role and that role is added to the database
+
+# add an employee
+* employee’s first name, 
+* last name, role, 
+* and manager, and that employee is added to the database
+
+# update an employee role
+* select an employee to update and their new role and this information is updated in the database
