@@ -15,4 +15,12 @@ VALUES
 ('receptionist', 50000, 4),
 ('secretary', 55000, 4);
 
--- INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES 
+('Tony', 'Hawk', 1, NULL),
+('Ryan', 'Sheckler', 2, 1),
+('Rob', 'Dyrdek', 3, NULL),
+('Bam', 'Margera', 4, NULL),
+('Jason', 'Lee', 5, NULL),
+('Leticia', 'Bufoni', 6, NULL),
+('P.', 'Rod', 7, NULL);
