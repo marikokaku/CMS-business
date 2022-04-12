@@ -43,8 +43,7 @@
 * salary
 
 # view all employess - formatted table showing: 
-* employee data, 
-* including employee ids, 
+* employee ids, 
 * first names, 
 * last names, 
 * job titles, 
