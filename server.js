@@ -38,13 +38,6 @@ const startPrompt = () => {
         'Add a role',
         'Add an employee',
         'Update an employee role',
-        'Update an employee manager',
-        'View employee by department',
-        'View employee by manager',
-        'Delete a department',
-        'Delete a role',
-        'Delete an employee',
-        'View total utilized budget',
         'Nothing'
       ],
     }
@@ -73,27 +66,6 @@ const startPrompt = () => {
       if (option === 'Update an employee role') {
         updateEmpRole();
       }
-      if (option === 'Update an employee manager') {
-        updateEmpMan();
-      }
-      if (option === 'View employee by department') {
-        viewEmpByDept();
-      }
-      if (option === 'View employee by manager') {
-        viewEmpByMan();
-      }
-      if (option === 'Delete a department') {
-        deleteDepartment();
-      }
-      if (option === 'Delete a role') {
-        deleteRole();
-      }
-      if (option === 'Delete an employee ') {
-        deleteEmployee();
-      }
-      if (option === 'View total utilized budget') {
-        viewBudget();
-      }
       if (option === 'Nothing') {
         db.end()
       };
@@ -102,7 +74,7 @@ const startPrompt = () => {
 
 // View all departments
 const allDepartments = () => {
-  console.log('All departments...\n');
+  console.log('\n All departments: \n');
   const sql = `SELECT * FROM department`;
 
   db.query(sql, (err, rows) => {
@@ -116,7 +88,7 @@ const allDepartments = () => {
 
 // View all roles
 const allRoles = () => {
-  console.log('All roles...\n');
+  console.log('\n All roles: \n');
   const sql = `SELECT 
     role.id,
     role.title, 
@@ -134,7 +106,7 @@ const allRoles = () => {
 
 // View all employees
 const allEmployees = () => {
-  console.log('All employees...\n');
+  console.log('\n All employees: \n');
   const sql = `SELECT
     employee.id,
     employee.first_name,
@@ -161,7 +133,7 @@ const addDepartment = () => {
     {
       type: 'input',
       name: 'name',
-      message: 'Enter name of new department',
+      message: 'Enter name of new department:',
       validate: nameInput => {
         if (nameInput) {
           return true;
@@ -177,7 +149,7 @@ const addDepartment = () => {
       const sql = `INSERT INTO department (name) VALUES (?)`;
       db.query(sql, answer.name, (err, result) => {
         if (err) throw err;
-        console.log('Added department:' + answer.name);
+        console.log('\n Department succesffuly added!');
 
         allDepartments();
       });
@@ -195,7 +167,7 @@ const addRole = () => {
       {
         type: 'input',
         name: 'role',
-        message: 'Enter new role',
+        message: 'Enter new role:',
         validate: roleInput => {
           if (roleInput) {
             return true;
@@ -208,7 +180,7 @@ const addRole = () => {
       {
         type: 'input',
         name: 'salary',
-        message: 'Enter salary for new role',
+        message: 'Enter salary for new role:',
         validate: salaryInput => {
           if (salaryInput) {
             return true;
@@ -221,7 +193,7 @@ const addRole = () => {
       {
         type: 'list',
         name: 'department',
-        message: 'Choose department this role belongs to',
+        message: 'Choose department this role belongs to:',
         choices: department
       }
     ])
@@ -230,7 +202,7 @@ const addRole = () => {
         const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
         db.query(sql, params, (err) => {
           if (err) throw err;
-          console.log('Added Role:' + answer.role);
+          console.log('\n Role successfully added!');
           allRoles();
         });
       });
@@ -238,101 +210,93 @@ const addRole = () => {
 };
 
 // Add employee
-const addEmployee = () => { 
-};
-
-// Update employee role
-const updateEmpRole = () => { };
-
-// Update employee manager
-const updateEmpMan = () => { };
-
-// View Employee by Department
-const viewEmpByDept = () => { };
-
-// Delete a role
-const deleteRole = () => {
-  const roleSql = `SELECT * FROM role`;
-
-  connection.promise().query(roleSql, (err, data) => {
+const addEmployee = () => {
+  const sql = `SELECT * FROM role`;
+  db.query(sql, (err, rows) => {
     if (err) throw err;
-
-    const role = data.map(({ title, id }) => ({ name: title, value: id }));
-
+    const role = rows.map(({ title, id }) => ({ name: title, value: id }));
     inquirer.prompt([
+      {
+        type: 'input',
+        name: 'firstName',
+        message: 'Enter first name of new employee:',
+        validate: firstNameInput => {
+          if (firstNameInput) {
+            return true;
+          } else {
+            console.log('Input required!');
+            return false;
+          }
+        }
+      },
+      {
+        type: 'input',
+        name: 'lastName',
+        message: 'Enter last name of new employee:',
+        validate: lastNameInput => {
+          if (lastNameInput) {
+            return true;
+          } else {
+            console.log('Input required!');
+            return false;
+          }
+        }
+      },
       {
         type: 'list',
         name: 'role',
-        message: "What role do you want to delete?",
+        message: 'Choose employee role:',
         choices: role
       }
     ])
-      .then(roleChoice => {
-        const role = roleChoice.role;
-        const sql = `DELETE FROM role WHERE id = ?`;
-
-        connection.query(sql, role, (err, result) => {
+      .then(answer => {
+        const params = [answer.firstName, answer.lastName, answer.role];
+        const sql = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)`;
+        db.query(sql, params, (err) => {
           if (err) throw err;
-          console.log("Successfully deleted!");
-
-          showRoles();
+          console.log('Employee successfully added!');
+          allEmployees();
         });
       });
   });
 };
 
-// Delete an employee
-const deleteEmployee = () => {
-  // get employees from employee table 
-  const employeeSql = `SELECT * FROM employee`;
-
-  connection.promise().query(employeeSql, (err, data) => {
+// Update employee role
+const updateEmpRole = () => {
+  const sql = `SELECT * FROM employee`;
+  db.query(sql, (err, rows) => {
     if (err) throw err;
+    const employee = rows.map(({ first_name, last_name, id }) => ({ name: first_name + '' + last_name, value: id }));
 
-    const employees = data.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+    const sql = `SELECT * FROM role`;
+    db.query(sql, (err, rows) => {
+      if (err) throw err;
+      const role = rows.map(({ title, id }) => ({ name: title, value: id }));
 
-    inquirer.prompt([
-      {
-        type: 'list',
-        name: 'name',
-        message: "Which employee would you like to delete?",
-        choices: employees
-      }
-    ])
-      .then(empChoice => {
-        const employee = empChoice.name;
+      inquirer.prompt([
+        {
+          type: 'list',
+          name: 'employee',
+          message: 'Choose employee to update: ',
+          choices: employee
+        },
+        {
+          type: 'list',
+          name: 'role',
+          message: 'Update employee role to: ',
+          choices: role
+        }
+      ])
 
-        const sql = `DELETE FROM employee WHERE id = ?`;
-
-        connection.query(sql, employee, (err, result) => {
-          if (err) throw err;
-          console.log("Successfully Deleted!");
-
-          showEmployees();
+        .then(answer => {
+          const params = [answer.employee, answer.role];
+          const sql = `UPDATE employee WHERE id = ? SET role_id =?`;
+          db.query(sql, params, (err) => {
+            if (err) throw err;
+            console.log('Employee role successfully updated!');
+            allEmployees();
+          });
         });
-      });
+    });
   });
-};
-
-// View total utilized budget
-const viewBudget = () => {
-  console.log('Showing budget by department...\n');
-
-  const sql = `SELECT department_id AS id, 
-                        department.name AS department,
-                        SUM(salary) AS budget
-                 FROM  role  
-                 JOIN department ON role.department_id = department.id GROUP BY  department_id`;
-
-  connection.promise().query(sql, (err, rows) => {
-    if (err) throw err;
-    console.table(rows);
-
-    promptUser();
-  });
-};
-
-
-
-
-
+}
