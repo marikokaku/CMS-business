@@ -290,7 +290,7 @@ const updateEmpRole = () => {
 
         .then(answer => {
           const params = [answer.employee, answer.role];
-          const sql = `UPDATE employee WHERE id = ? SET role_id =?`;
+          const sql = `UPDATE employee WHERE id = (employee) SET role_id = (role)`;
           db.query(sql, params, (err) => {
             if (err) throw err;
             console.log('Employee role successfully updated!');
